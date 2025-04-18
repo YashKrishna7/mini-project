@@ -1,0 +1,66 @@
+{% comment %} {% extends 'base.html' %} {% endcomment %}
+{% comment %} {% block content %}
+<h2 class="text-2xl font-bold mb-4">Order Food</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Order</button>
+</form>
+
+<h3 class="text-xl font-bold mt-6">Available Menu</h3>
+<ul>
+    {% for item in menu_items %}
+        <li>{{ item.name }} - ${{ item.price }}</li>
+    {% endfor %}
+</ul>
+{% endblock %} {% endcomment %}
+
+<!-- Navigation Bar -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+<nav class="bg-blue-600 p-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="text-white font-bold text-xl">Food Delivery</div>
+      <div class="space-x-4">
+        <a href="#" class="text-white hover:text-blue-200">Home</a>
+        <a href="#" class="text-white hover:text-blue-200">Menu</a>
+        <a href="#" class="text-white hover:text-blue-200">My Orders</a>
+        <a href="#" class="text-white hover:text-blue-200">Cart</a>
+        <a href="#" class="text-white hover:text-blue-200">Account</a>
+      </div>
+    </div>
+  </nav>
+  
+  {% block content %}
+  <div class="max-w-4xl mx-auto p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Order Food</h2>
+    
+    <form method="post" class="bg-white shadow-md rounded-lg p-6 mb-6">
+      {% csrf_token %}
+      <div class="space-y-4">
+        {{ form.as_p|safe }}
+      </div>
+      <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 rounded transition duration-200">Order</button>
+    </form>
+  
+    <h3 class="text-xl font-bold text-gray-800 mt-8 mb-4">Available Menu</h3>
+    <ul class="bg-white shadow-md rounded-lg divide-y divide-gray-200">
+      {% for item in menu_items %}
+        <li class="p-4 flex justify-between items-center hover:bg-gray-50">
+          <span class="font-medium text-gray-700">{{ item.name }}</span>
+          <span class="text-gray-600">₹{{ item.price }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endblock %}
+</body>
+</html>

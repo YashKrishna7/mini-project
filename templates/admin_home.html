@@ -1,0 +1,123 @@
+{% comment %} {% extends 'base.html' %} {% endcomment %}
+{% comment %} {% block content %}
+<h2 class="text-center text-3xl font-bold mb-6">Admin Dashboard</h2>
+<div class="grid md:grid-cols-2 gap-8">
+    <a href="{% url 'add_menu_item' %}" class="bg-blue-100 p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+        <i class="fas fa-plus text-4xl text-blue-600 mb-4"></i>
+        <h3 class="text-xl font-semibold mb-3">Add Menu</h3>
+    </a> {% endcomment %}
+    {% comment %} <a href="{% url 'canteen_student_details' %}" class="bg-green-100 p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300"> {% endcomment %}
+        {% comment %} <i class="fas fa-users text-4xl text-green-600 mb-4"></i>
+        <h3 class="text-xl font-semibold mb-3">Student Details</h3> {% endcomment %}
+    {% comment %} </a> {% endcomment %}
+    {% comment %} <a href="{% url 'add_student' %}" class="bg-purple-100 p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300"> {% endcomment %}
+        {% comment %} <i class="fas fa-user-plus text-4xl text-purple-600 mb-4"></i>
+        <h3 class="text-xl font-semibold mb-3">Add Student</h3> {% endcomment %}
+    {% comment %} </a> {% endcomment %}
+    {% comment %} <a href="{% url 'student_payments' %}" class="bg-yellow-100 p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300"> {% endcomment %}
+        {% comment %} <i class="fas fa-credit-card text-4xl text-yellow-600 mb-4"></i>
+        <h3 class="text-xl font-semibold mb-3">Student Payments</h3>
+    </a> {% endcomment %}
+{% comment %} </div>
+{% endblock %} {% endcomment %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Mess Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <img src="FEAST.JPG" alt="Mess Logo" class="h-10 mr-4">
+                <h1 class="text-2xl font-bold text-blue-600">FEAST</h1>
+            </div>
+            <div class="space-x-4">
+                <a href="{% url 'logout' %}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                    Sign Out
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl font-bold mb-4">Convenient Meal Management</h2>
+            <p class="text-xl mb-8">Simplify your dining experience with our smart mess management system</p>
+            {% comment %} <div class="space-x-4">
+                <button  class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-full hover:bg-white hover:text-blue-600 transition">
+                    IN
+                </button>
+            </div> {% endcomment %}
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            {% comment %} <h2 class="text-3xl font-bold text-center mb-12">Why Choose Our Mess Management System?</h2> {% endcomment %}
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <a href="{% url 'add_menu_item' %}" class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
+                focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
+                <i class="fas fa-utensils text-4xl text-blue-600 mb-4"></i>
+                <h3 class="text-xl font-semibold mb-3">Add Menu</h3>
+                <p class="text-gray-600">Wide variety of delicious and nutritious meals</p>
+            </a>
+
+                <!-- Feature 2 -->
+                <a href="{% url 'menu_list' %}" class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
+               focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
+                    <i class="fas fa-wallet text-4xl text-green-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Show menu</h3>
+        </a>
+
+                <!-- Feature 3 -->
+                <a href="{% url 'view_students' %}"  class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
+               focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
+                    <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Student Details</h3>
+                    <p class="text-gray-600">Monitor your meal expenses and spending patterns</p>
+                </a>
+            <!-- Feature 4 -->
+            <button class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
+               focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
+                    <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Attendence Tracking</h3>
+                    <p class="text-gray-600">Monitor your attendences</p>
+            </button>
+            <a href="{% url 'add_student' %}" class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
+               focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
+                    <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Add Student</h3>
+        </a>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 Student Mess Management. All rights reserved.</p>
+            <div class="mt-4 space-x-4">
+                <a href="#" class="hover:text-blue-400">Privacy Policy</a>
+                <a href="#" class="hover:text-blue-400">Terms of Service</a>
+                <a href="#" class="hover:text-blue-400">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 
+
+
+

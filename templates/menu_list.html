@@ -1,0 +1,79 @@
+<!-- {% for item in menu_items %}
+    <div class="menu-item">
+        <h3>{{ item.name }}</h3>
+        <p>{{ item.description }}</p>
+        <p>Price: ₹{{ item.price }}</p> -->
+
+        <!-- {% if user.is_superuser %} -->
+            <!-- Show Delete Option for Admin -->
+            <!-- <a href="{% url 'delete_menu_item' item.id %}" class="text-red-500">Delete</a>
+        {% else %} -->
+            <!-- Show Buy Option for Students -->
+            <!-- <a href="{% url 'buy_menu_item' item.id %}" class="text-green-500">Buy</a>
+        {% endif %}
+    </div>
+{% endfor %} -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FEAST Menu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-600 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-xl font-bold">FEAST</a>
+            <button class="md:hidden block text-white focus:outline-none" id="menu-toggle">
+                ☰
+            </button>
+            <ul class="hidden md:flex space-x-6" id="menu">
+                {% if user.is_superuser %}  {# Admin #}
+                    <li><a href="{% url 'add_menu_item' %}" class="hover:text-gray-300">Add Menu</a></li>
+                <!-- <li><a href="#" class="hover:text-gray-300">Orders</a></li> -->
+                {% endif %}
+                <li><a href="{% url 'home' %}" class="hover:text-gray-300">Home</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Menu Section -->
+    <div class="container mx-auto mt-6 p-4">
+        <h1 class="text-2xl font-bold text-center text-gray-800">Today's Menu</h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            {% for item in menu_items %}
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold">{{ item.name }}</h3>
+                    <p class="text-gray-600">{{ item.description }}</p>
+                    <p class="font-bold text-blue-600">Price: ₹{{ item.price }}</p>
+
+                    {% if user.is_superuser %}  {# Admin #}
+                        <a href="{% url 'delete_menu_item' item.id %}" 
+                           class="text-red-600 hover:text-red-800 font-medium block mt-2">
+                            Delete
+                        </a>
+                        {% else %} {# Student #}
+                        <a href="{% url 'buy_menu_item' item.id %}" 
+                           class="text-green-600 hover:text-green-800 font-medium block mt-2">
+                            Buy
+                        </a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Mobile Menu Toggle Script -->
+    <script>
+        document.getElementById("menu-toggle").addEventListener("click", function () {
+            document.getElementById("menu").classList.toggle("hidden");
+        });
+    </script>
+
+</body>
+</html>

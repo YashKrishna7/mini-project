@@ -1,0 +1,96 @@
+<!-- {% block content %}
+<h2 class="text-2xl font-bold">Expense Tracking</h2>
+<p class="mt-4 text-lg">Today's Expense: ₹{{ daily_expense }}</p>
+<p class="mt-2 text-lg">This Month's Expense: ₹{{ monthly_expense }}</p>
+{% endblock %} -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <nav class="bg-blue-600 p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+          <div class="text-white font-bold text-xl">Finance Tracker</div>
+          <div class="space-x-4">
+            <a href="#" class="text-white hover:text-blue-200">Dashboard</a>
+            <a href="#" class="text-white hover:text-blue-200">Expenses</a>
+            <a href="#" class="text-white hover:text-blue-200">Reports</a>
+            <a href="#" class="text-white hover:text-blue-200">Settings</a>
+          </div>
+        </div>
+      </nav>
+      
+      <div class="container mx-auto p-6">
+        <h2 class="text-2xl font-bold text-gray-800">Expense Tracking</h2>
+        <p class="mt-4 text-lg text-gray-700">Today's Expense: ₹{{ daily_expense }}</p>
+        <p class="mt-2 text-lg text-gray-700">This Month's Expense: ₹{{ monthly_expense }}</p>
+      </div>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-blue-600 p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+          <div class="text-white font-bold text-xl">FEAST Expense Tracker</div>
+          <div class="space-x-4">
+            <a href="{% url 'home' %}" class="text-white hover:text-blue-200">Home</a>
+            <!-- <a href="#" class="text-white hover:text-blue-200">Expenses</a>
+            <a href="#" class="text-white hover:text-blue-200">Reports</a>
+            <a href="#" class="text-white hover:text-blue-200">Settings</a> -->
+          </div>
+        </div>
+    </nav>
+
+    <!-- Expense Summary -->
+    <div class="container mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
+        <h2 class="text-2xl font-bold text-gray-800">Expense Tracking</h2>
+        <p class="mt-4 text-lg text-gray-700">Today's Expense: <span class="font-semibold">₹{{ daily_expense }}</span></p>
+        <p class="mt-2 text-lg text-gray-700">This Month's Expense: <span class="font-semibold">₹{{ monthly_expense }}</span></p>
+    </div>
+
+    <!-- Daily Expense Breakdown -->
+    <div class="container mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Daily Breakdown (Current Month)</h3>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+                <thead class="bg-blue-500 text-white">
+                    <tr>
+                        <th class="py-2 px-4 border">Date</th>
+                        <th class="py-2 px-4 border">Expense (₹)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in daily_expenses %}
+                    <tr class="text-gray-700 text-center border">
+                        <td class="py-2 px-4 border">{{ expense.order_date }}</td>
+                        <td class="py-2 px-4 border">₹{{ expense.total }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center py-4 text-gray-500">No expenses recorded</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+{% block content %}
+<h2>Menu List</h2>
+<ul>
+    {% for item in menu_items %}
+        <li>
+            {{ item.name }} - {{ item.category }} - ${{ item.price }} 
+            <a href="{% url 'delete_menu_item' item.id %}">Buy</a>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
