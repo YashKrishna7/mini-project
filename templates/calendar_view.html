@@ -1,0 +1,58 @@
+{% comment %} <form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="selected_dates[]" id="selected_dates">
+    <button type="submit">Submit IN Dates</button>
+  </form>
+  
+  <script>
+    // Pseudo JS (adapt to your datepicker)
+    const selected = [];
+    function onDateClick(date) {
+        if (!selected.includes(date)) {
+            selected.push(date);
+        } else {
+            selected.splice(selected.indexOf(date), 1);
+        }
+        document.getElementById('selected_dates').value = JSON.stringify(selected);
+    }
+  </script>
+   {% endcomment %}
+
+   <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar View</title>
+</head>
+<body>
+
+<h2>Select Your IN Dates</h2>
+
+<!-- Display the calendar with selected dates marked as 'IN' -->
+<form method="POST">
+    {% csrf_token %}
+    
+    <!-- Assuming JavaScript sends the selected dates here -->
+    <input type="hidden" name="selected_dates[]" value="{{ selected_date }}">
+
+    <button type="submit">Save Selected Dates</button>
+</form>
+
+<div id="calendar"></div>
+
+<script>
+    // Initialize the calendar with JavaScript and FullCalendar (or another library)
+    const selectedDates = {{ in_dates|safe }};  // This will pass the list of "IN" dates to JS
+
+    // FullCalendar initialization (Example):
+    $('#calendar').fullCalendar({
+        events: selectedDates.map(date => ({
+            title: 'IN',
+            start: date
+        }))
+    });
+</script>
+
+</body>
+</html>

@@ -20,6 +20,23 @@ from .models import User, Order
 from datetime import time
 from django.utils.timezone import localtime
 from django.http import JsonResponse
+# views.py
+
+# from django.contrib.auth import get_user_model
+# from django.db.utils import IntegrityError
+
+# from django.contrib.auth import get_user_model
+
+# def create_college_user():
+#     User = get_user_model()
+#     if not User.objects.filter(username='college').exists():
+#         User.objects.create_user(
+#             username='college',
+#             password='college123',
+#             user_type='college_admin',  # Make sure this matches your model's choices
+#             college='ABC College'
+#         )
+
 
 def add_student(request):
     if request.method == 'POST':
@@ -32,6 +49,19 @@ def add_student(request):
     else:
         form = SignUpForm()
     return render(request, 'add_student.html', {'form': form})
+
+@login_required
+def add_college_user(request):
+    if request.method == 'POST':
+        form = CollegeUserSignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'College Admin user created successfully!')
+            return redirect('college_user_added_success')  # Your target URL
+    else:
+        form = CollegeUserSignUpForm()
+    return render(request, 'add_college_user.html', {'form': form})
+
 
 def signin_view(request):
     if request.method == 'POST':
@@ -50,16 +80,26 @@ def signin_view(request):
         form = SignInForm()
     return render(request, 'signin.html', {'form': form})
 
+
+
 def logout_view(request):
     logout(request)
     messages.success(request, 'Logged out successfully!')
     return redirect('welcome')
 login_required
+# def home_view(request):
+#     if request.user.is_superuser:
+#         return render(request, 'admin_home.html')  # Superuser dashboard
+#     else:
+#         return render(request, 'student_home.html')  # Student dashboard
 def home_view(request):
     if request.user.is_superuser:
         return render(request, 'admin_home.html')  # Superuser dashboard
+    elif request.user.user_type == 'college_admin':
+        return render(request, 'college_home.html')  # College dashboard
     else:
         return render(request, 'student_home.html')  # Student dashboard
+
 def welcome_view(request):
     user=request.user
     # print('user',request.user)
@@ -72,15 +112,59 @@ def menu_list(request):
     menu_items = Menu.objects.all()
     return render(request, 'menu_list.html', {'menu_items': menu_items})
 
+# def add_menu_item(request):
+#     if request.method == 'POST':
+#         form = MenuForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('menu_list')
+#     else:
+#         form = MenuForm()
+#     return render(request, 'add_menu.html', {'form': form})
+
 def add_menu_item(request):
+    days = Menu.DAYS_OF_WEEK
+    categories = Menu.CATEGORY_CHOICES
+    item_map = {
+        'breakfast': ['Dosa', 'Idli', 'Poori', 'Upma', 'Puttu'],
+        'lunch': ['Rice and Curry', 'Sambar', 'Meals', 'Chicken Fry'],
+        'snacks': ['Egg Baji', 'Banana Fry', 'Samosa'],
+        'dinner': ['Biriyani', 'Chapathi', 'Parotta']
+    }
+
     if request.method == 'POST':
-        form = MenuForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('menu_list')
-    else:
-        form = MenuForm()
-    return render(request, 'add_menu.html', {'form': form})
+        day = request.POST.get('day')
+        for category in item_map:
+            for item in item_map[category]:
+                price = request.POST.get(f'{category}_{item}_price')
+                if price:
+                    # Check if it already exists (update)
+                    existing = Menu.objects.filter(day=day, category=category, name=item).first()
+                    if existing:
+                        existing.price = price
+                        existing.save()
+                    else:
+                        Menu.objects.create(day=day, category=category, name=item, price=price)
+        return redirect('menu_list')
+
+    # menu_items = Menu.objects.all()
+    menu_items = Menu.objects.all().order_by('day', 'category')
+
+    # context = {
+    #     'days': days,
+    #     'categories': categories,
+    #     'item_map': item_map,
+    #     'menu_items': menu_items,
+    # }
+    context = {
+    'days': days,
+    'categories': categories,
+    'item_map': item_map,
+    'menu_items': menu_items,
+    'category_items': [(category[0], item_map[category[0]]) for category in categories],
+}
+
+    return render(request, 'add_menu.html', context)
 
 def delete_menu_item(request, item_id):
     item = get_object_or_404(Menu, id=item_id)
@@ -97,9 +181,10 @@ def buy_menu_item(request, item_id):
         student=request.user,
         menu_item=menu_item,
         total_price=menu_item.price  # Assuming quantity = 1
+
     )
 
-    return redirect('order_food')  # Redirect to expense tracking
+    return redirect('view_orders')  # Redirect to expense tracking
 
 
 @login_required
@@ -209,6 +294,9 @@ def select_in_option(request):
 
 def student_added_success(request):
     return render(request, 'student_added_success.html')
+
+def college_user_added_success(request):
+    return render(request, 'college_user_added_success.html')
 
 
 # def view_students(request):

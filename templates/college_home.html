@@ -1,3 +1,10 @@
+{% comment %} {% extends 'base.html' %} {% endcomment %}
+{% comment %} {% block content %}
+<h1 class="text-2xl font-bold">Welcome, College Admin!</h1>
+<p>College: {{ user.college }}</p>
+<a href="{% url 'view_students' %}" class="btn">View Students</a>
+{% endblock %} {% endcomment %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,44 +49,17 @@
             {% comment %} <h2 class="text-3xl font-bold text-center mb-12">Why Choose Our Mess Management System?</h2> {% endcomment %}
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- Feature 1 -->
-                <a href="{% url 'add_menu_item' %}" class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
-                focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
-                <i class="fas fa-utensils text-4xl text-blue-600 mb-4"></i>
-                <h3 class="text-xl font-semibold mb-3">Add Menu</h3>
-                <p class="text-gray-600">Wide variety of delicious and nutritious meals</p>
-            </a>
-
-                <!-- Feature 2 -->
-                <a href="{% url 'menu_list' %}" class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
-               focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
-                    <i class="fas fa-wallet text-4xl text-green-600 mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-3">Show menu</h3>
-        </a>
-
-                <!-- Feature 3 -->
                 <a href="{% url 'view_students' %}"  class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
                focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
                     <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i>
                     <h3 class="text-xl font-semibold mb-3">Student Details</h3>
                     <p class="text-gray-600">Monitor your meal expenses and spending patterns</p>
                 </a>
-            <!-- Feature 4 -->
-            <button class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
-               focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
-                    <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-3">Attendence Tracking</h3>
-                    <p class="text-gray-600">Monitor your attendences</p>
-            </button>
             <a href="{% url 'add_student' %}" class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
                focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
                     <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i>
                     <h3 class="text-xl font-semibold mb-3">Add Student</h3>
         </a>
-        <a href="{% url 'add_college_user' %}" class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
-        focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
-             <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i>
-             <h3 class="text-xl font-semibold mb-3">Add College</h3>
- </a>
             </div>
         </div>
     </section>
@@ -99,6 +79,7 @@
     </footer>
 </body>
 </html> 
+
 
 
 

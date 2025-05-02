@@ -52,4 +52,6 @@ urlpatterns = [
     path("select-in/", select_in_option, name="select_in_option"),
     path("student_added_success/", student_added_success, name="student_added_success"),
     path("view_students/", view_students, name="view_students"),
+    path('add-college-user/', add_college_user, name='add_college_user'),
+    path('college_added_success/', add_college_user, name='college_user_added_success'),
 ]

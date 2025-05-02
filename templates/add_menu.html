@@ -1,15 +1,4 @@
-{% comment %} {% include "home.html" %} {% endcomment %}
-{% comment %} {% block content %}
-<h2>Add Menu Item</h2>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Add</button>
-</form>
-<a href="{% url 'menu_list' %}">Back to Menu</a>
-{% endblock %} {% endcomment %}
-
-<!DOCTYPE html>
+{% comment %} <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -83,4 +72,172 @@
 
 
 
+ {% endcomment %}
 
+
+ {% comment %} <form method="POST">
+    {% csrf_token %}
+  
+    <h3>Choose Day:</h3>
+    <div>
+      {% for key, label in days %}
+        <label>
+          <input type="radio" name="day" value="{{ key }}" required> {{ label }}
+        </label>
+      {% endfor %}
+    </div>
+  
+    <hr>
+  
+    {% for category, items in category_items %}
+      <h3>{{ category|title }}</h3>
+      <div>
+        {% for item in items %}
+          <div>
+            <label>
+              <input type="checkbox" name="selected_items" value="{{ category }}_{{ item }}"
+                     onchange="toggleInput('{{ category }}_{{ item }}')"> {{ item }}
+            </label>
+            ₹<input type="number" step="0.01" name="{{ category }}_{{ item }}_price"
+                    id="{{ category }}_{{ item }}_input" placeholder="Enter price" style="display:none;">
+          </div>
+        {% endfor %}
+      </div>
+      <hr>
+    {% endfor %}
+  
+    <button type="submit">Save / Update</button>
+  </form>
+  
+  <script>
+    function toggleInput(id) {
+      const checkbox = document.querySelector(`[value="${id}"]`);
+      const inputBox = document.getElementById(id + "_input");
+      if (checkbox.checked) {
+        inputBox.style.display = "inline-block";
+      } else {
+        inputBox.style.display = "none";
+        inputBox.value = "";
+      }
+    }
+  </script>
+  
+  <hr>
+  
+  <h3>Existing Menu</h3>
+  {% for item in menu_list %}
+    <div>
+      {{ item.day|title }} - {{ item.category|title }} - {{ item.name }} - ₹{{ item.price }}
+      <a href="{% url 'delete_menu_item' item.id %}">Delete</a>
+    </div>
+  {% empty %}
+    <p>No menu items found.</p>
+  {% endfor %} {% endcomment %}
+
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu Management</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="bg-blue-500 shadow-md">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center">
+            <img src="FEAST.JPG" alt="Mess Logo" class="h-10 mr-4">
+            <h1 class="text-2xl font-bold text-white">FEAST</h1>
+        </div>
+        <div class="space-x-4">
+            <a href="{% url 'home' %}" class="text-white hover:text-blue-600 font-medium">Home</a>
+            <a href="{% url 'logout' %}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+                Sign Out
+            </a>
+        </div>
+    </div>
+</nav>
+  <!-- Main Content -->
+  <div class="py-10 px-4">
+    <form method="POST" class="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-md space-y-6">
+      {% csrf_token %}
+
+      <h3 class="text-xl font-semibold text-gray-800">Choose Day:</h3>
+      <div class="flex flex-wrap gap-4">
+        {% for key, label in days %}
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="day" value="{{ key }}" required class="form-radio text-blue-600">
+            <span class="text-gray-700">{{ label }}</span>
+          </label>
+        {% endfor %}
+      </div>
+
+      <hr class="border-gray-300">
+
+      {% for category, items in category_items %}
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800 mt-4">{{ category|title }}</h3>
+          <div class="space-y-4 mt-2">
+            {% for item in items %}
+              <div class="flex items-center space-x-4">
+                <label class="flex items-center space-x-2 w-1/2">
+                  <input type="checkbox" name="selected_items" value="{{ category }}_{{ item }}"
+                         onchange="toggleInput('{{ category }}_{{ item }}')"
+                         class="form-checkbox text-blue-600">
+                  <span class="text-gray-700">{{ item }}</span>
+                </label>
+                <div class="flex items-center space-x-1">
+                  <span class="text-gray-500">₹</span>
+                  <input type="number" step="0.01" name="{{ category }}_{{ item }}_price"
+                         id="{{ category }}_{{ item }}_input"
+                         placeholder="Enter price"
+                         class="form-input border rounded-md px-3 py-1 w-24 hidden">
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          <hr class="border-gray-200 my-4">
+        </div>
+      {% endfor %}
+
+      <button type="submit"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow">
+        Save / Update
+      </button>
+    </form>
+
+    <script>
+      function toggleInput(id) {
+        const checkbox = document.querySelector(`[value="${id}"]`);
+        const inputBox = document.getElementById(id + "_input");
+        if (checkbox.checked) {
+          inputBox.classList.remove("hidden");
+          inputBox.required = true;
+        } else {
+          inputBox.classList.add("hidden");
+          inputBox.required = false;
+          inputBox.value = "";
+        }
+      }
+    </script>
+
+    <hr class="my-12 border-gray-300">
+
+    <h3 class="text-xl font-semibold text-gray-800 text-center mb-4">Existing Menu</h3>
+    <div class="max-w-2xl mx-auto space-y-2">
+      {% for item in menu_list %}
+        <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md shadow-sm">
+          <span class="text-gray-700">{{ item.day|title }} - {{ item.category|title }} - {{ item.name }} - ₹{{ item.price }}</span>
+          <a href="{% url 'delete_menu_item' item.id %}"
+             class="text-red-500 hover:underline font-medium">Delete</a>
+        </div>
+      {% empty %}
+        <p class="text-gray-500 text-center">No menu items found.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+</body>
+</html>

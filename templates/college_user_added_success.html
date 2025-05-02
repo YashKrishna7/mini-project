@@ -1,0 +1,91 @@
+{% comment %} {% extends 'base_generic.html' %} {% endcomment %}
+
+{% comment %} {% block content %}
+  <h1>List of Registered Students</h1>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Phone Number</th>
+        <th>Address</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in students %}
+        <tr>
+          <td>{{ student.username }}</td>
+          <td>{{ student.email }}</td>
+          <td>{{ student.phone_number }}</td>
+          <td>{{ student.address }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %} {% endcomment %}
+{% comment %} <div>
+    {% for student in page_obj %}
+        <p>{{ student.username }} - {{ student.email }}</p>
+    {% endfor %}
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div> {% endcomment %}
+{% comment %} {% extends 'base_generic.html' %} {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>College User Added Successfully</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Navbar -->
+  <nav class="bg-blue-600 p-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="#" class="text-white text-lg font-bold">FEAST</a>
+      <div class="space-x-4">
+        <a href="{% url 'home' %}" class="text-white hover:text-gray-200">Home</a>
+        {% comment %} <a href="{% url 'add' %}" class="text-white hover:text-gray-200">Add Student</a> {% endcomment %}
+        <a href="{% url 'logout' %}" class="text-white hover:text-gray-200">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Success Message -->
+  <div class="flex items-center justify-center min-h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-md text-center max-w-md">
+      <h2 class="text-2xl font-bold text-green-600">Student Added Successfully!</h2>
+      <p class="mt-2 text-gray-600">The student account has been created successfully.</p>
+
+      <div class="mt-6 flex justify-center space-x-4">
+        <!-- Button to add another student -->
+        <a href="{% url 'add_college_user' %}" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition">
+          Add Another College USer
+        </a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
+
