@@ -2,11 +2,29 @@ from django.db import models
 # from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.contrib.auth.models import AbstractUser,Group,Permission
+# from django.contrib.auth.models import AbstractUser,Group,Permission
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now
 
+from django.contrib.auth.models import AbstractUser, Group, Permission, BaseUserManager
+from django.db import models
 
+class CustomUserManager(BaseUserManager):
+    def create_user(self, username, password=None, **extra_fields):
+        if not username:
+            raise ValueError("The Username must be set")
+        extra_fields.setdefault('user_type', 'student')  # Default to 'student'
+        user = self.model(username=username, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, username, password=None, **extra_fields):
+        extra_fields.setdefault('user_type', 'admin')  # Force 'admin' for superusers
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_staff', True)
+
+        return self.create_user(username, password, **extra_fields)
 
 class User(AbstractUser):
     USER_TYPES = [
@@ -15,15 +33,35 @@ class User(AbstractUser):
         ('admin', 'Admin'),
     ]
     user_type = models.CharField(max_length=20, choices=USER_TYPES, default='student')
-    # Additional fields
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
-    
+
     groups = models.ManyToManyField(Group, related_name="custom_user_groups", blank=True)
     user_permissions = models.ManyToManyField(Permission, related_name="custom_user_permissions", blank=True)
-    
+
+    # Set the custom manager
+    objects = CustomUserManager()
+
     def __str__(self):
         return self.username
+
+
+# class User(AbstractUser):
+#     USER_TYPES = [
+#         ('student', 'Student'),
+#         ('college_admin', 'College Admin'),
+#         ('admin', 'Admin'),
+#     ]
+#     user_type = models.CharField(max_length=20, choices=USER_TYPES, default='student')
+#     # Additional fields
+#     phone_number = models.CharField(max_length=15, blank=True, null=True)
+#     address = models.TextField(blank=True, null=True)
+    
+#     groups = models.ManyToManyField(Group, related_name="custom_user_groups", blank=True)
+#     user_permissions = models.ManyToManyField(Permission, related_name="custom_user_permissions", blank=True)
+    
+#     def __str__(self):
+#         return self.username
 
 # Automatically create a Profile when a new User is created
 @receiver(post_save, sender=User)
