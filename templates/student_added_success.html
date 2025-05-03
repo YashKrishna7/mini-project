@@ -64,7 +64,7 @@
     <div class="container mx-auto flex justify-between items-center">
       <a href="#" class="text-white text-lg font-bold">FEAST</a>
       <div class="space-x-4">
-        <a href="{% url 'home' %}" class="text-white hover:text-gray-200">Home</a>
+        {% comment %} <a href="{% url 'home' %}" class="text-white hover:text-gray-200">Home</a> {% endcomment %}
         <a href="{% url 'add_student' %}" class="text-white hover:text-gray-200">Add Student</a>
         <a href="{% url 'logout' %}" class="text-white hover:text-gray-200">Logout</a>
       </div>

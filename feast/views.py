@@ -87,11 +87,7 @@ def logout_view(request):
     messages.success(request, 'Logged out successfully!')
     return redirect('welcome')
 login_required
-# def home_view(request):
-#     if request.user.is_superuser:
-#         return render(request, 'admin_home.html')  # Superuser dashboard
-#     else:
-#         return render(request, 'student_home.html')  # Student dashboard
+
 def home_view(request):
     if request.user.is_superuser:
         return render(request, 'admin_home.html')  # Superuser dashboard
@@ -104,8 +100,6 @@ def welcome_view(request):
     user=request.user
     # print('user',request.user)
     return render(request,'welcome.html',{'user':user})
-# def home_view(request):
-#     return render(request, 'feast/home.html')
 
 
 def menu_list(request):
@@ -315,7 +309,8 @@ def college_user_added_success(request):
 from django.core.paginator import Paginator
 
 def view_students(request):
-    if request.user.user_type != 'canteen_owner':
+    # if request.user.user_type != 'student || college_admin':
+    if request.user.user_type != 'student' and request.user.user_type != 'college_admin':
         messages.error( "You do not have permission to view this page.")
         return redirect('home')
 
@@ -326,61 +321,3 @@ def view_students(request):
 
     return render(request, 'student_list.html', {'page_obj': page_obj})
 
-
-
-
-# def view_students(request):
-#     # Ensure only the canteen owner can access this view
-#     if request.user.user_type != 'canteen_owner':
-#         messages.error(request, "You do not have permission to view this page.")
-#         return redirect('home')  # Redirect to home or another page
-
-#     students = User.objects.filter(user_type='student')  # Get all students
-#     return render(request, 'view_students.html', {'students': students})
-
-# def view_expense(request):
-#     today = localdate()  # Gets the current date
-#     daily_expense = Order.objects.filter(student=request.user, order_date=today).aggregate(Sum('total_price'))['total_price__sum'] or 0
-#     return render(request, 'expense.html', {'daily_expense': daily_expense})
-
-# def view_expense(request):
-#     today = localdate()  # Corrected: No arguments
-
-#     current_month = today.month
-#     current_year = today.year
-
-#     # Calculate daily expense
-#     daily_expense = Order.objects.filter(
-#         student=request.user, order_date=today
-#     ).aggregate(Sum('total_price'))['total_price__sum'] or 0
-
-#     # Calculate monthly expense
-#     monthly_expense = Order.objects.filter(
-#         student=request.user,
-#         order_date__year=current_year,
-#         order_date__month=current_month
-#     ).aggregate(Sum('total_price'))['total_price__sum'] or 0
-
-#     return render(request, 'expense.html', {
-#         'daily_expense': daily_expense,
-#         'monthly_expense': monthly_expense
-#     })
-#IN option
-# def select_in_option(request):
-#     if request.method == "POST":
-#         current_time = localtime(now()).time()
-
-#         if not (18 <= current_time.hour <= 21):
-#             messages.error(request, "You can only select the 'IN' option between 6 PM and 9 PM.")
-#             return redirect("home")
-
-#         # Assuming authenticated student
-#         student = request.user  
-#         student.selected_in_today = True  # Update your model accordingly
-#         student.save()
-
-#         messages.success(request, "You are IN!")  # ✅ Success message
-
-#         return redirect("home")  # Redirect to home page
-
-#     return JsonResponse({"error": "Invalid request"}, status=400)

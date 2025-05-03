@@ -1,10 +1,3 @@
-{% comment %} {% extends 'base.html' %} {% endcomment %}
-{% comment %} {% block content %}
-<h1 class="text-2xl font-bold">Welcome, College Admin!</h1>
-<p>College: {{ user.college }}</p>
-<a href="{% url 'view_students' %}" class="btn">View Students</a>
-{% endblock %} {% endcomment %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,34 +28,50 @@
         <div class="container mx-auto px-4 text-center">
             <h2 class="text-4xl font-bold mb-4">Convenient Meal Management</h2>
             <p class="text-xl mb-8">Simplify your dining experience with our smart mess management system</p>
-            {% comment %} <div class="space-x-4">
-                <button  class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-full hover:bg-white hover:text-blue-600 transition">
-                    IN
-                </button>
-            </div> {% endcomment %}
-        </div>
     </header>
 
-    <!-- Features Section -->
+    {% comment %} <!-- Features Section -->
     <section id="features" class="py-16 bg-white">
         <div class="container mx-auto px-4">
-            {% comment %} <h2 class="text-3xl font-bold text-center mb-12">Why Choose Our Mess Management System?</h2> {% endcomment %}
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- Feature 1 -->
                 <a href="{% url 'view_students' %}"  class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
                focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
-                    <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i>
+                    <i class="fas fa-address-card text-4xl text-indigo-600 mb-4"></i>
                     <h3 class="text-xl font-semibold mb-3">Student Details</h3>
                     <p class="text-gray-600">Monitor your meal expenses and spending patterns</p>
                 </a>
-            <a href="{% url 'add_student' %}" class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
-               focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
-                    <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-3">Add Student</h3>
-        </a>
+                <!-- Feature 2 -->
+                <a href="{% url 'add_student' %}" class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
+                focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
+                        <i class="fas fa-user-plus text-4xl text-green-600 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-3">Add Student</h3>
+                </a>
             </div>
         </div>
-    </section>
+    </section> {% endcomment %}
+<!-- Features Section -->
+<section id="features" class="py-16 bg-white">
+    <div class="max-w-4xl mx-auto px-4">
+        <div class="flex flex-wrap justify-center gap-8">
+            <!-- Feature 1 -->
+            <a href="{% url 'view_students' %}" class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
+               focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95 w-full max-w-xs">
+                <i class="fas fa-address-card text-4xl text-indigo-600 mb-4"></i>
+                <h3 class="text-xl font-semibold mb-3">Student Details</h3>
+                <p class="text-gray-600">Monitor your meal expenses and spending patterns</p>
+            </a>
+
+            <!-- Feature 2 -->
+            <a href="{% url 'add_student' %}" class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
+               focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95 w-full max-w-xs">
+                <i class="fas fa-user-plus text-4xl text-green-600 mb-4"></i>
+                <h3 class="text-xl font-semibold mb-3">Add Student</h3>
+                <p class="text-gray-600">Register new students into the system easily</p>
+            </a>
+        </div>
+    </div>
+</section>
 
 
 
