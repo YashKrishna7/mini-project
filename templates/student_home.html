@@ -127,14 +127,16 @@
             <!-- Feature 4 -->
             <a href="{% url 'attendance' %}" class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
             focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
-                    <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i>
-                    <h3 class="text-xl font-semibold mb-3">Attendence Tracking</h3>
+                    {% comment %} <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i> {% endcomment %}
+                    <i class="fas fa-calendar-alt text-4xl text-blue-600 mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-3">Select IN</h3>
                     <p class="text-gray-600">Monitor your attendences</p>
             </a>
             <!-- Feature 5 -->
-            <a href="{'#'}" class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
+            <a href="{% url 'in_details' %}" class="bg-gray-100 p-6 rounded-lg text-center shadow-md hover:shadow-lg transition duration-300 
             focus:outline-none focus:ring-2 focus:ring-blue-400 active:scale-95">
-                    <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i>
+                    {% comment %} <i class="fas fa-chart-line text-4xl text-purple-600 mb-4"></i> {% endcomment %}
+                    <i class="fas fa-calendar-check text-4xl text-purple-600 mb-4"></i>
                     <h3 class="text-xl font-semibold mb-3">Attendence Tracking</h3>
                     <p class="text-gray-600">Monitor your attendences</p>
             </a>
