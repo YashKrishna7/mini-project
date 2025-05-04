@@ -49,9 +49,12 @@ urlpatterns = [
     # path('admin_home/', home_view, name='home_view'),
     # path('student_home/', home_view, name='home_view'),
     path('students_details/', canteen_student_details, name='student_details'),
-    path("select-in/", select_in_option, name="select_in_option"),
+    # path("select-in/", select_in_option, name="select_in_option"),
     path("student_added_success/", student_added_success, name="student_added_success"),
     path("view_students/", view_students, name="view_students"),
     path('add-college-user/', add_college_user, name='add_college_user'),
     path('college_added_success/', add_college_user, name='college_user_added_success'),
+    path('in-details/', in_details_view, name='in_details'),
+    path('attendance/', attendance_view, name='attendance'),
+    # path("calendar/", calendar_view, name="calendar"),
 ]

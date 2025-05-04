@@ -35,7 +35,7 @@ class User(AbstractUser):
     user_type = models.CharField(max_length=20, choices=USER_TYPES, default='student')
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
-
+    expense = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     groups = models.ManyToManyField(Group, related_name="custom_user_groups", blank=True)
     user_permissions = models.ManyToManyField(Permission, related_name="custom_user_permissions", blank=True)
 
@@ -154,3 +154,25 @@ class Order(models.Model):
     is_in_option = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.student.username} - {self.menu_item.name} - {self.order_date}"
+class Attendance(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
+    in_selected = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('student', 'date')
+
+# from django.db import models
+# from django.conf import settings
+# from datetime import date
+
+# class InOutSelection(models.Model):
+#     student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+#     date = models.DateField()
+#     is_in = models.BooleanField(default=False)
+
+#     class Meta:
+#         unique_together = ('student', 'date')
+
+#     def __str__(self):
+#         return f"{self.student.username} - {self.date} - {'IN' if self.is_in else 'OUT'}"

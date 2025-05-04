@@ -257,32 +257,32 @@ def canteen_student_details(request):
 
 
 
-def select_in_option(request):
-    if request.method == "POST":
-        current_time = localtime(now()).time()
+# def select_in_option(request):
+#     if request.method == "POST":
+#         current_time = localtime(now()).time()
 
-        if not (18 <= current_time.hour <= 21):
-            messages.error(request, "You can only select the 'IN' option between 6 PM and 9 PM.")
-            return redirect("home")
+#         if not (18 <= current_time.hour <= 21):
+#             messages.error(request, "You can only select the 'IN' option between 6 PM and 9 PM.")
+#             return redirect("home")
 
-        student = request.user  # Assuming authenticated student
+#         student = request.user  # Assuming authenticated student
 
-        if student.selected_in_today:
-            messages.warning(request, "You have already selected 'IN' for today.")
-            return redirect("home")
+#         if student.selected_in_today:
+#             messages.warning(request, "You have already selected 'IN' for today.")
+#             return redirect("home")
 
-        # ✅ Mark 'IN' as selected
-        student.selected_in_today = True  
+#         # ✅ Mark 'IN' as selected
+#         student.selected_in_today = True  
 
-        # ✅ Add ₹95 to the student's expense
-        student.expense += 95  
-        student.save()
+#         # ✅ Add ₹95 to the student's expense
+#         student.expense += 95  
+#         student.save()
 
-        messages.success(request, "You are IN! ₹95 has been added to your expense.")
+#         messages.success(request, "You are IN! ₹95 has been added to your expense.")
 
-        return redirect("home")  
+#         return redirect("home")  
 
-    return JsonResponse({"error": "Invalid request"}, status=400)
+#     return JsonResponse({"error": "Invalid request"}, status=400)
 
 
 
@@ -309,8 +309,7 @@ def college_user_added_success(request):
 from django.core.paginator import Paginator
 
 def view_students(request):
-    # if request.user.user_type != 'student || college_admin':
-    if request.user.user_type != 'student' and request.user.user_type != 'college_admin':
+    if request.user.user_type != 'admin' and request.user.user_type != 'college_admin':
         messages.error( "You do not have permission to view this page.")
         return redirect('home')
 
@@ -321,3 +320,132 @@ def view_students(request):
 
     return render(request, 'student_list.html', {'page_obj': page_obj})
 
+
+# from datetime import date, timedelta
+# from calendar import monthrange
+# from django.shortcuts import render, redirect
+# from django.utils.timezone import now
+# from .models import Attendance
+# from django.contrib import messages
+# from django.db.models.functions import ExtractMonth, ExtractYear  # ✅ Added for filtering by month/year
+
+# def attendance_view(request):
+#     today = now().date()
+#     year = today.year
+#     month = today.month
+#     num_days = monthrange(year, month)[1]
+
+#     dates = [date(year, month, day) for day in range(1, num_days + 1)]
+
+#     # ✅ Fixed: use ExtractMonth and ExtractYear to filter Attendance
+#     attendance_map = {
+#         att.date: att for att in Attendance.objects
+#             .filter(student=request.user)
+#             .annotate(month=ExtractMonth('date'), year=ExtractYear('date'))
+#             .filter(month=month, year=year)
+#     }
+
+#     if request.method == "POST":
+#         selected_days = request.POST.getlist("selected_days")
+#         selected_dates = [date.fromisoformat(day) for day in selected_days]
+
+#         for d in dates:
+#             att, created = Attendance.objects.get_or_create(student=request.user, date=d)
+#             att.in_selected = d in selected_dates
+#             att.save()
+
+#         messages.success(request, "Your attendance for the month has been updated!")
+#         return redirect('in_details')  # 👈 Redirect to the new page
+
+#     context = {
+#         'dates': dates,
+#         'attendance_map': attendance_map,
+#         'month': today.strftime('%B'),
+#         'year': year,
+#     }
+#     return render(request, 'attendance.html', context)
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from datetime import date
+from calendar import monthrange
+from django.utils.timezone import now
+from django.db.models.functions import ExtractMonth, ExtractYear
+from .models import Attendance
+
+def attendance_view(request):
+    today = now().date()
+    year = today.year
+    month = today.month
+    num_days = monthrange(year, month)[1]
+
+    # Generate all dates of the month
+    dates = [date(year, month, day) for day in range(1, num_days + 1)]
+
+    # Get existing attendance records for this user for the current month
+    attendance_qs = Attendance.objects.filter(student=request.user) \
+        .annotate(month=ExtractMonth('date'), year=ExtractYear('date')) \
+        .filter(month=month, year=year)
+
+    attendance_map = {att.date: att for att in attendance_qs}
+
+    if request.method == "POST":
+        selected_days = request.POST.getlist("selected_days")
+        selected_dates = [date.fromisoformat(day) for day in selected_days]
+
+        new_in_count = 0
+
+        for d in dates:
+            was_in = attendance_map.get(d).in_selected if d in attendance_map else False
+            should_be_in = d in selected_dates
+
+            att, _ = Attendance.objects.get_or_create(student=request.user, date=d)
+
+            if should_be_in and not was_in:
+                # Only charge ₹95 if it's newly marked as IN
+                # request.user.expense += 95
+                # new_in_count += 1
+                custom_user = User.objects.get(id=request.user.id)
+                custom_user.expense += 95
+                custom_user.save()
+                new_in_count += 1
+
+            att.in_selected = should_be_in
+            att.save()
+
+        request.user.save()
+
+        messages.success(
+            request,
+            f"Your attendance has been updated. ₹{95 * new_in_count} has been added to your expense."
+        )
+        return redirect('in_details')
+
+    context = {
+        'dates': dates,
+        'attendance_map': attendance_map,
+        'month': today.strftime('%B'),
+        'year': year,
+    }
+    return render(request, 'attendance.html', context)
+
+
+def in_details_view(request):
+    today = now().date()
+    year = today.year
+    month = today.month
+
+    # ✅ Fixed: use ExtractMonth and ExtractYear to filter Attendance
+    attendance_records = Attendance.objects.filter(student=request.user) \
+        .annotate(month=ExtractMonth('date'), year=ExtractYear('date')) \
+        .filter(month=month, year=year)
+
+    in_days = attendance_records.filter(in_selected=True).count()
+    out_days = attendance_records.filter(in_selected=False).count()
+
+    context = {
+        'in_days': in_days,
+        'out_days': out_days,
+        'month': today.strftime('%B'),
+        'year': year,
+    }
+    return render(request, 'in_details.html', context)

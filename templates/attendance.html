@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Attendance</title>
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-2xl font-semibold">FEAST</a>
+            <div class="space-x-6">
+                <a href="{% url 'home' %}" class="hover:text-blue-200 transition duration-300">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4">
+        <h2 class="text-2xl font-bold text-center mb-4">Monthly Attendance - {{ month }} {{ year }}</h2>
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Calendar Grid -->
+            <div class="grid grid-cols-7 gap-2 text-center">
+                {% for date in dates %}
+                    {% with iso_date=date|date:"Y-m-d" %}
+                    <div class="border p-4 rounded cursor-pointer day-cell
+                                {% if attendance_map.date and attendance_map.date.in_selected %}bg-green-300{% else %}bg-gray-100{% endif %}"
+                         data-date="{{ iso_date }}">
+                        <span class="text-xl font-semibold">{{ date.day }}</span>
+                        <input type="checkbox" name="selected_days" value="{{ iso_date }}" class="hidden"
+                               {% if date in attendance_map and attendance_map.date.in_selected %}checked{% endif %}>
+                    </div>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+
+            <!-- Save Button -->
+            <div class="mt-4 text-center">
+                <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition duration-300">Save Attendance</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- JavaScript to Toggle Attendance -->
+    <script>
+        document.querySelectorAll('.day-cell').forEach(cell => {
+            cell.addEventListener('click', () => {
+                cell.classList.toggle('bg-green-300');
+                cell.classList.toggle('bg-gray-100');
+
+                const checkbox = cell.querySelector('input[type="checkbox"]');
+                checkbox.checked = !checkbox.checked;
+            });
+        });
+    </script>
+
+</body>
+</html>
+

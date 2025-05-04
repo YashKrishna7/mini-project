@@ -1,0 +1,18 @@
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>IN Count</th>
+            <th>Total Expense (₹)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for date, summary in attendance_summary.items %}
+            <tr>
+                <td>{{ date }}</td>
+                <td>{{ summary.in_count }}</td>
+                <td>{{ summary.total_expense }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
