@@ -57,4 +57,5 @@ urlpatterns = [
     path('in-details/', in_details_view, name='in_details'),
     path('attendance/', attendance_view, name='attendance'),
     # path("calendar/", calendar_view, name="calendar"),
+    path('attendance-summary/',admin_attendance_summary, name='admin_attendance_summary'),
 ]

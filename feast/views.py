@@ -372,53 +372,89 @@ from django.utils.timezone import now
 from django.db.models.functions import ExtractMonth, ExtractYear
 from .models import Attendance
 
+# def attendance_view(request):
+#     today = now().date()
+#     year = today.year
+#     month = today.month
+#     num_days = monthrange(year, month)[1]
+
+#     # Generate all dates of the month
+#     dates = [date(year, month, day) for day in range(1, num_days + 1)]
+
+#     # Get existing attendance records for this user for the current month
+#     attendance_qs = Attendance.objects.filter(student=request.user) \
+#         .annotate(month=ExtractMonth('date'), year=ExtractYear('date')) \
+#         .filter(month=month, year=year)
+
+#     attendance_map = {att.date: att for att in attendance_qs}
+
+#     if request.method == "POST":
+#         selected_days = request.POST.getlist("selected_days")
+#         selected_dates = [date.fromisoformat(day) for day in selected_days]
+
+#         new_in_count = 0
+
+#         for d in dates:
+#             was_in = attendance_map.get(d).in_selected if d in attendance_map else False
+#             should_be_in = d in selected_dates
+
+#             att, _ = Attendance.objects.get_or_create(student=request.user, date=d)
+
+#             if should_be_in and not was_in:
+#                 # Only charge ₹95 if it's newly marked as IN
+#                 # request.user.expense += 95
+#                 # new_in_count += 1
+#                 custom_user = User.objects.get(id=request.user.id)
+#                 custom_user.expense += 95
+#                 custom_user.save()
+#                 new_in_count += 1
+
+#             att.in_selected = should_be_in
+#             att.save()
+
+#         request.user.save()
+
+#         messages.success(
+#             request,
+#             f"Your attendance has been updated. ₹{95 * new_in_count} has been added to your expense."
+#         )
+#         return redirect('in_details')
+
+#     context = {
+#         'dates': dates,
+#         'attendance_map': attendance_map,
+#         'month': today.strftime('%B'),
+#         'year': year,
+#     }
+#     return render(request, 'attendance.html', context)
+
 def attendance_view(request):
     today = now().date()
     year = today.year
     month = today.month
     num_days = monthrange(year, month)[1]
 
-    # Generate all dates of the month
     dates = [date(year, month, day) for day in range(1, num_days + 1)]
 
-    # Get existing attendance records for this user for the current month
-    attendance_qs = Attendance.objects.filter(student=request.user) \
-        .annotate(month=ExtractMonth('date'), year=ExtractYear('date')) \
-        .filter(month=month, year=year)
-
-    attendance_map = {att.date: att for att in attendance_qs}
+    # ✅ Fixed: use ExtractMonth and ExtractYear to filter Attendance
+    attendance_map = {
+        att.date: att for att in Attendance.objects
+            .filter(student=request.user)
+            .annotate(month=ExtractMonth('date'), year=ExtractYear('date'))
+            .filter(month=month, year=year)
+    }
 
     if request.method == "POST":
         selected_days = request.POST.getlist("selected_days")
         selected_dates = [date.fromisoformat(day) for day in selected_days]
 
-        new_in_count = 0
-
         for d in dates:
-            was_in = attendance_map.get(d).in_selected if d in attendance_map else False
-            should_be_in = d in selected_dates
-
-            att, _ = Attendance.objects.get_or_create(student=request.user, date=d)
-
-            if should_be_in and not was_in:
-                # Only charge ₹95 if it's newly marked as IN
-                # request.user.expense += 95
-                # new_in_count += 1
-                custom_user = User.objects.get(id=request.user.id)
-                custom_user.expense += 95
-                custom_user.save()
-                new_in_count += 1
-
-            att.in_selected = should_be_in
+            att, created = Attendance.objects.get_or_create(student=request.user, date=d)
+            att.in_selected = d in selected_dates
             att.save()
 
-        request.user.save()
-
-        messages.success(
-            request,
-            f"Your attendance has been updated. ₹{95 * new_in_count} has been added to your expense."
-        )
-        return redirect('in_details')
+        messages.success(request, "Your attendance for the month has been updated!")
+        return redirect('in_details')  # 👈 Redirect to the new page
 
     context = {
         'dates': dates,
@@ -427,7 +463,6 @@ def attendance_view(request):
         'year': year,
     }
     return render(request, 'attendance.html', context)
-
 
 def in_details_view(request):
     today = now().date()
@@ -449,3 +484,46 @@ def in_details_view(request):
         'year': year,
     }
     return render(request, 'in_details.html', context)
+
+
+
+
+from django.contrib.admin.views.decorators import staff_member_required
+
+@staff_member_required
+def admin_attendance_summary(request):
+    today = date.today()
+    year = today.year
+    month = today.month
+    
+    # Get all attendance records for the current month where the student is "IN"
+    attendance_records = Attendance.objects.filter(
+        date__year=year, 
+        date__month=month, 
+        in_selected=True  # Only count "IN" students
+    )
+    
+    # Create a dictionary of "IN" counts for each day of the month
+    day_counts = {}
+    for record in attendance_records:
+        day = record.date.day
+        if day not in day_counts:
+            day_counts[day] = 0
+        day_counts[day] += 1
+    
+    # Generate a list of all days in the current month (to ensure we display all days)
+    num_days = (date(year, month + 1, 1) - date(year, month, 1)).days  # Get number of days in the month
+    all_days = range(1, num_days + 1)
+    
+    # Create a list of dictionaries with the day and count of "IN" students for each day
+    dates = []
+    for day in all_days:
+        in_count = day_counts.get(day, 0)  # Get the count for the day, default to 0
+        dates.append({'day': day, 'in_count': in_count})
+    
+    context = {
+        'month': today.strftime('%B'),
+        'year': year,
+        'dates': dates,  # Pass the list of day and count of "IN" students
+    }
+    return render(request, 'admin_attendance_summary.html', context)
