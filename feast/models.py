@@ -143,6 +143,7 @@ class Menu(models.Model):
     def _str_(self):
         return self.name
 
+from django.utils import timezone
 
 User = get_user_model()
 class Order(models.Model):
@@ -152,8 +153,10 @@ class Order(models.Model):
     total_price = models.DecimalField(max_digits=6, decimal_places=2)
     order_date = models.DateField(auto_now_add=True)
     is_in_option = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now)  # ✅
     def __str__(self):
         return f"{self.student.username} - {self.menu_item.name} - {self.order_date}"
+    
 class Attendance(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()

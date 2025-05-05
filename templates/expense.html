@@ -1,4 +1,4 @@
-<!-- {% block content %}
+{% comment %} <!-- {% block content %}
 <h2 class="text-2xl font-bold">Expense Tracking</h2>
 <p class="mt-4 text-lg">Today's Expense: ₹{{ daily_expense }}</p>
 <p class="mt-2 text-lg">This Month's Expense: ₹{{ monthly_expense }}</p>
@@ -91,6 +91,98 @@
             </table>
         </div>
     </div>
+
+</body>
+</html> {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FEAST | Expense Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Navigation Bar -->
+  <nav class="bg-blue-600 p-4 shadow">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="text-white text-xl font-semibold">FEAST Expense Tracker</div>
+      <div class="space-x-4">
+        <a href="{% url 'home' %}" class="text-white hover:text-blue-200">Home</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Summary Card -->
+  <div class="container mx-auto mt-8 px-4">
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-4">Expense Summary</h2>
+      <p class="text-lg">Today's Expense: <span class="font-semibold">₹{{ daily_expense }}</span></p>
+      <p class="text-lg mt-2">This Month's Expense: <span class="font-semibold">₹{{ monthly_expense }}</span></p>
+    </div>
+  </div>
+
+  <!-- Daily Breakdown Table -->
+  <div class="container mx-auto mt-6 px-4">
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h3 class="text-xl font-semibold mb-4">Daily Breakdown (Current Month)</h3>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-200 rounded-lg text-center">
+          <thead class="bg-blue-500 text-white">
+            <tr>
+              <th class="py-3 px-4 border">Date</th>
+              <th class="py-3 px-4 border">Expense (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for expense in daily_expenses %}
+            <tr class="border-b hover:bg-gray-50">
+              <td class="py-2 px-4 border">{{ expense.order_date }}</td>
+              <td class="py-2 px-4 border">₹{{ expense.total }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="2" class="py-4 text-gray-500">No expenses recorded</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Expense Summary -->
+  <div class="container mx-auto mt-6 px-4 mb-10">
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-xl font-bold mb-4">Monthly Expense Summary</h2>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-200 rounded-lg text-center">
+          <thead class="bg-blue-500 text-white">
+            <tr>
+              <th class="py-3 px-4 border">Month</th>
+              <th class="py-3 px-4 border">Total Expense (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for month, amount in monthly_expenses.items %}
+            <tr class="border-b hover:bg-gray-50">
+              <td class="py-2 px-4 border">{{ month }}</td>
+              <td class="py-2 px-4 border">₹{{ amount }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="2" class="py-4 text-gray-500">No expense data available.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
