@@ -709,6 +709,20 @@ def payment_success(request):
         'month': month
     })
 
+# @login_required
+# def complaint_box(request):
+#     if request.user.user_type != 'student':
+#         return redirect('home')  # only students can submit
+
+#     if request.method == 'POST':
+#         text = request.POST.get('complaint')
+#         if text:
+#             Complaint.objects.create(student=request.user, text=text)
+#             return render(request, 'complaint_box.html', {'success': True})
+
+#     return render(request, 'complaint_box.html')
+
+
 @login_required
 def complaint_box(request):
     if request.user.user_type != 'student':
@@ -723,9 +737,17 @@ def complaint_box(request):
     return render(request, 'complaint_box.html')
 
 @login_required
-def view_complaints(request):
+def college_home(request):
     if request.user.user_type != 'college':
-        return redirect('home')  # only college can see
+        return redirect('home')
 
+    complaints = Complaint.objects.all().order_by('-submitted_at')
+
+    return render(request, 'college_home.html', {'complaints': complaints})
+
+
+
+@login_required
+def view_complaints(request):
     complaints = Complaint.objects.all().order_by('-submitted_at')
     return render(request, 'view_complaints.html', {'complaints': complaints})

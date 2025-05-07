@@ -62,4 +62,6 @@ urlpatterns = [
     path('student/home1/', pay_mess_bill, name='pay_mess_bill'),
     path('verify-payment/', verify_payment, name='verify_payment'),
     path('complaint-box/', complaint_box, name='complaint_box'),
+    path('college/home/', college_home, name='college_home'),
+    path('college/complaints/',view_complaints, name='view_complaints'),
 ]

@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Complaints</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <nav class="bg-white shadow p-4">
+        <div class="flex justify-between items-center container mx-auto">
+            <h1 class="text-xl font-bold text-blue-700">FEAST - Complaints</h1>
+            <a href="{% url 'college_home' %}" class="text-blue-600 hover:underline">Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto mt-8 px-4">
+        <h2 class="text-2xl font-bold mb-4">Student Complaints</h2>
+
+        {% if complaints %}
+            <ul class="space-y-4">
+                {% for complaint in complaints %}
+                    <li class="bg-white p-4 rounded-lg shadow border-l-4 border-red-500">
+                        <p class="text-gray-800">{{ complaint.text }}</p>
+                        <p class="text-sm text-gray-500 mt-1">
+                            By <strong>{{ complaint.student.username }}</strong> on {{ complaint.submitted_at|date:"F j, Y, g:i a" }}
+                        </p>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-gray-600">No complaints have been submitted yet.</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>
