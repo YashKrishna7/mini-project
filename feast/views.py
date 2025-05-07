@@ -79,6 +79,35 @@ def signin_view(request):
     else:
         form = SignInForm()
     return render(request, 'signin.html', {'form': form})
+# def signin_view(request):
+#     if request.method == 'POST':
+#         form = SignInForm(request.POST)
+#         errors = {}
+#         if form.is_valid():
+#             username = form.cleaned_data.get('username')
+#             password = form.cleaned_data.get('password')
+
+#             if not User.objects.filter(username=username).exists():
+#                 errors['username'] = "Username Not Found"
+
+#             user = authenticate(username=username, password=password)
+#             if user is None:
+#                 errors['password'] = "Invalid password"
+
+#             if errors:
+#                 return render(request, 'signin.html', {'form': form, 'errors': errors})
+#             else:
+#                 login(request, user)
+#                 messages.success(request, 'Logged in successfully!')
+#                 return redirect('home')
+#         else:
+#             # Optionally, collect form validation errors
+#             errors['form'] = "Invalid form submission."
+#             return render(request, 'signin.html', {'form': form, 'errors': errors})
+#     else:
+#         form = SignInForm()
+#     return render(request, 'signin.html', {'form': form})
+
 
 
 
