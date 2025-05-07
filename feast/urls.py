@@ -59,4 +59,7 @@ urlpatterns = [
     path('attendance/', attendance_view, name='attendance'),
     # path("calendar/", calendar_view, name="calendar"),
     path('attendance-summary/',admin_attendance_summary, name='admin_attendance_summary'),
+    path('student/home1/', pay_mess_bill, name='pay_mess_bill'),
+    path('verify-payment/', verify_payment, name='verify_payment'),
+    path('complaint-box/', complaint_box, name='complaint_box'),
 ]

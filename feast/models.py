@@ -179,3 +179,44 @@ class Attendance(models.Model):
 
 #     def __str__(self):
 #         return f"{self.student.username} - {self.date} - {'IN' if self.is_in else 'OUT'}"
+
+
+class MessBill(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    month = models.IntegerField()
+    year = models.IntegerField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)  # No default
+    is_paid = models.BooleanField(default=False)
+
+    def _str_(self):
+        return f"{self.student.username} - {self.month}/{self.year}"
+
+
+
+class Payment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    mess_bill = models.ForeignKey(MessBill, on_delete=models.CASCADE, null=True, blank=True)
+    amount = models.IntegerField()
+    razorpay_order_id = models.CharField(max_length=100)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_signature = models.CharField(max_length=100, blank=True, null=True)
+    payment_status = models.CharField(max_length=20, default='pending')  # optional
+    created_at = models.DateTimeField(auto_now_add=True)
+class Meal(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
+
+    def _str_(self):
+        return f"{self.student.username} - {self.date}"
+# models.py
+class Student(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student')
+
+
+class Complaint(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'user_type': 'student'})
+    text = models.TextField()
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def _str_(self):
+        return f"{self.student.username} - {self.submitted_at.strftime('%Y-%m-%d %H:%M')}"

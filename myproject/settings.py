@@ -123,3 +123,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL='feast.user'
+
+RAZORPAY_KEY_ID     = "rzp_test_XUYdHwozcNTcWm"
+RAZORPAY_KEY_SECRET = "JRyggmRfNhrZiW8t0VJNB1hY"

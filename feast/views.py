@@ -546,3 +546,157 @@ def admin_attendance_summary(request):
         'dates': dates,  # Pass the list of day and count of "IN" students
     }
     return render(request, 'admin_attendance_summary.html', context)
+
+
+from datetime import datetime
+from decimal import Decimal
+from .models import MessBill, Payment
+from django.http import HttpResponse
+from .models import Meal
+from datetime import datetime
+from django.conf import settings
+from django.shortcuts import render, redirect
+from .models import Payment
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse, HttpResponseBadRequest
+import hmac, hashlib, json
+from django.contrib.auth.decorators import login_required
+from decimal import Decimal
+
+
+@login_required
+def pay_mess_bill(request):
+    user = request.user
+    today = localdate()
+    month = today.month
+    year = today.year
+
+    # ✅ Use the expense tracker logic: total monthly orders for the student
+    monthly_expense = Order.objects.filter(
+        student=user,
+        order_date__year=year,
+        order_date__month=month
+    ).aggregate(Sum('total_price'))['total_price__sum'] or 0
+
+    if monthly_expense < 1:
+        return HttpResponse("Mess bill amount too low to create Razorpay order.")
+
+    # ✅ Get or create bill
+    mess_bill, created = MessBill.objects.get_or_create(
+        student=user,
+        month=month,
+        year=year,
+        defaults={'amount': monthly_expense}
+    )
+
+    # ✅ If already exists and unpaid, update the amount if changed
+    if not mess_bill.is_paid and mess_bill.amount != monthly_expense:
+        mess_bill.amount = monthly_expense
+        mess_bill.save()
+
+    # ✅ Check if already paid
+    if mess_bill.is_paid:
+        return HttpResponse("You’ve already paid this month's mess bill.")
+
+    # ✅ Create Razorpay order
+    amount_paise = int(Decimal(str(mess_bill.amount)) * 100)
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    order = client.order.create({'amount': amount_paise, 'currency': 'INR', 'payment_capture': 1})
+
+    # ✅ Store in Payment table
+    Payment.objects.create(
+        user=user,
+        amount=amount_paise,
+        razorpay_order_id=order['id'],
+        mess_bill=mess_bill
+    
+    )
+    
+    context = {
+        'razorpay_order_id': order['id'],
+        'razorpay_key_id': settings.RAZORPAY_KEY_ID,
+        # 'amount': int(monthly_expense * 100),
+         'amount': amount_paise,
+        'callback_url': '/verify-payment/',
+        'student': user.username,
+        'mess_bill_id': mess_bill.id,
+    }
+    return render(request, 'pay_mess_bill.html', context)
+from django.shortcuts import render, redirect
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from .models import Student, Payment, MessBill
+from django.db.models import Sum
+import razorpay
+from django.shortcuts import reverse
+
+@csrf_exempt
+def verify_payment(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            razorpay_order_id = data.get('razorpay_order_id')
+            razorpay_payment_id = data.get('razorpay_payment_id')
+            razorpay_signature = data.get('razorpay_signature')
+
+            # Verify payment signature
+            client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+            client.utility.verify_payment_signature({
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature': razorpay_signature
+            })
+
+            # Get Payment entry
+            payment = Payment.objects.get(razorpay_order_id=razorpay_order_id)
+            mess_bill = payment.mess_bill
+            mess_bill.is_paid = True
+            mess_bill.save()
+
+            # Update payment status
+            payment.razorpay_payment_id = razorpay_payment_id
+            payment.status = "paid"
+            payment.save()
+
+            # Redirect after successful payment
+            redirect_url = reverse('home')  # URL name of your student home page
+
+            return JsonResponse({
+                "status": "success",
+                "redirect_url": redirect_url
+            })
+
+        except Exception as e:
+            print("Payment verification failed:", e)
+            return JsonResponse({"status": "fail"})
+
+def payment_success(request):
+    amount = request.GET.get('amount')
+    month = request.GET.get('month')
+    return render(request, 'payment_success.html', {
+        'username': request.user.username,
+        'amount': amount,
+        'month': month
+    })
+
+@login_required
+def complaint_box(request):
+    if request.user.user_type != 'student':
+        return redirect('home')  # only students can submit
+
+    if request.method == 'POST':
+        text = request.POST.get('complaint')
+        if text:
+            Complaint.objects.create(student=request.user, text=text)
+            return render(request, 'complaint_box.html', {'success': True})
+
+    return render(request, 'complaint_box.html')
+
+@login_required
+def view_complaints(request):
+    if request.user.user_type != 'college':
+        return redirect('home')  # only college can see
+
+    complaints = Complaint.objects.all().order_by('-submitted_at')
+    return render(request, 'view_complaints.html', {'complaints': complaints})
