@@ -306,20 +306,39 @@ def college_user_added_success(request):
 #     return render(request, '#', {'students': students})
 
 
+
+from django.db.models import Sum
 from django.core.paginator import Paginator
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from .models import User
 
 def view_students(request):
-    if request.user.user_type != 'admin' and request.user.user_type != 'college_admin':
-        messages.error( "You do not have permission to view this page.")
+    if request.user.user_type not in ['admin', 'college_admin']:
+        messages.error(request, "You do not have permission to view this page.")
         return redirect('home')
 
-    student_list = User.objects.filter(user_type='student')
-    paginator = Paginator(student_list, 10)  # Show 10 students per page
+    # Use correct reverse relationship: 'order'
+    student_list = User.objects.filter(user_type='student').annotate(
+        total_expense=Sum('order__total_price')
+    )
+
+    paginator = Paginator(student_list, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'student_list.html', {'page_obj': page_obj})
+from django.http import HttpResponseForbidden
 
+@login_required
+def delete_student(request, student_id):
+    if not request.user.is_superuser:  # Or other permission check
+        return HttpResponseForbidden("Access Denied")
+
+    if request.method == 'POST':
+        student = get_object_or_404(User, id=student_id)
+        student.delete()
+    return redirect('view_students')
 
 # from datetime import date, timedelta
 # from calendar import monthrange
